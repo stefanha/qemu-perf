@@ -1,0 +1,19 @@
+# Copy this file to ./hosts and replace your-machine.localdomain with the host
+# you'd like to benchmark.  You also need to create an SSH tunnel like this:
+#
+#   $ ssh -fNL 2222:VM_PRIVATE_IP:22 your-machine.localdomain
+#
+# where VM_PRIVATE_IP is the IP address of the VM on a private bridge (often
+# the default networking setup for a libvirt KVM guest).
+
+[hosts]
+your-machine.localdomain
+
+[vms]
+vm ansible_host=127.0.0.1 ansible_port=2222 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[hosts:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[vms:vars]
+ansible_python_interpreter=/usr/bin/python3

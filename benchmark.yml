@@ -1,0 +1,149 @@
+---
+- name: set up build servers
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - name: install git and QEMU dependencies
+     dnf:
+         state: present
+         name: [
+             'binutils',
+             'bluez-libs-devel',
+             'brlapi-devel',
+             'check-devel',
+             'cpp',
+             'cyrus-sasl-devel',
+             'gcc',
+             'git',
+             'glusterfs-api-devel',
+             'glusterfs-devel',
+             'gnutls-devel',
+             'gperftools-devel',
+             'iasl',
+             'kernel-devel',
+             'libaio-devel',
+             'libattr-devel',
+             'libcacard-devel',
+             'libcap-devel',
+             'libcurl-devel',
+             'libgcrypt-devel',
+             'libiscsi-devel',
+             'libjpeg-devel',
+             'libpng-devel',
+             'librados2-devel',
+             'librbd1-devel',
+             'librdmacm-devel',
+             'libseccomp-devel',
+             'libssh2-devel',
+             'libtool',
+             'libusbx-devel',
+             'libuuid-devel',
+             'lzo-devel',
+             'make',
+             'ncurses-devel',
+             'nss-devel',
+             'numactl-devel',
+             'pciutils-devel',
+             'perl-podlators',
+             'pixman-devel',
+             'pulseaudio-libs-devel',
+             'python',
+             'rsync',
+             'SDL-devel',
+             'spice-protocol',
+             'spice-server-devel',
+             'systemtap',
+             'systemtap-sdt-devel',
+             'texi2html',
+             'texinfo',
+             'usbredir-devel',
+             'which',
+             'zlib-devel'
+         ]
+
+- name: set up vm
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - name: install virt-builder
+     dnf:
+        state: present
+        name: ['libguestfs-tools', 'libvirt-daemon']
+
+   - name: start libvirtd service
+     service: name=libvirtd state=started
+
+   - name: create vm image
+     shell: virt-builder fedora-30 --quiet --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --write '/root/.ssh/authorized_keys:{{ lookup("file", lookup("env", "HOME") + "/.ssh/id_rsa.pub") }}' --chmod '0600:/root/.ssh/authorized_keys' --selinux-relabel creates=/var/lib/libvirt/images/test.img
+
+- name: build QEMU
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - name: set up QEMU git repo
+     git:
+       repo=https://git.qemu.org/git/qemu.git
+       version=v4.2.0-rc0
+       dest=/root/qemu
+
+   - name: ignore submodules in git-status(1)
+     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
+
+   - name: build QEMU
+     shell: ./configure --target-list=x86_64-softmmu && make -j4 chdir=/root/qemu
+
+- name: put NVMe flash translation later into well-known state
+  hosts : hosts
+  remote_user: root
+  tasks:
+   - name: discard NVMe drive
+     shell: blkdiscard /dev/nvme0n1p1
+   - name: write NVMe drive (first pass)
+     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+   - name: write NVMe drive (second pass)
+     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+
+- name: start VM
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - name: define VM
+     virt:
+       command: define
+       name: test
+       xml: "{{ lookup('file', 'files/test.xml') }}"
+
+   - name: start VM
+     virt:
+       name: test
+       state: running
+
+   - name: wait for SSH
+     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
+
+- name: set up fio
+  hosts: vms
+  remote_user: root
+  tasks:
+   - name: install fio
+     dnf: name=fio state=present
+
+- name: run benchmark
+  hosts: vms
+  remote_user: root
+  tasks:
+   - name: copy fio job files
+     copy: src=files/fio.job dest=/root/fio.job mode=644
+   - name: run fio
+     shell: fio --output-format=json --output fio-output-{{ item }}.json fio.job
+     with_sequence: count=5
+   - name: collect benchmark results
+     fetch: src=fio-output-{{ item }}.json dest=/tmp/ flat=yes
+     with_sequence: count=5
+
+- name: stop VM
+  hosts: vms
+  remote_user: root
+  tasks:
+   - name: stop QEMU
+     command: /sbin/shutdown -t now

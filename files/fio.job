@@ -1,0 +1,11 @@
+[global]
+filename=/dev/vdb
+ioengine=libaio
+direct=1
+runtime=60
+ramp_time=5
+gtod_reduce=1
+
+[job1]
+rw=randread
+bs=4K
