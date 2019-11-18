@@ -130,7 +130,6 @@
    - name: define VM
      virt:
        command: define
-       name: test
        xml: "{{ lookup('file', 'files/test.xml') }}"
 
    - name: start VM
