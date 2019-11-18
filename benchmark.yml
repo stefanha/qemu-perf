@@ -122,6 +122,11 @@
   hosts: hosts
   remote_user: root
   tasks:
+   - name: install python3-libvirt
+     dnf:
+        state: present
+        name: 'python3-libvirt'
+
    - name: define VM
      virt:
        command: define
