@@ -89,6 +89,21 @@
    - name: ignore submodules in git-status(1)
      git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
 
+   - name: allow path traversal into /root
+     file:
+       path: /root
+       mode: '551'
+
+   - name: install SELinux Python modules
+     dnf:
+       state: present
+       name: ['python3-libselinux']
+
+   - name: set SELinux to permissive mode to avoid having to set contexts on all files
+     selinux:
+       policy: targeted
+       state: permissive
+
    - name: build QEMU
      shell: ./configure --target-list=x86_64-softmmu && make -j4 chdir=/root/qemu
 
