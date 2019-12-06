@@ -40,4 +40,4 @@ if __name__ == '__main__':
 
     print('{:<30} {:>12}   {}'.format('Name', 'IOPS', 'Error'))
     for name, result in sorted(runs_data.items(), key=lambda x: x[0]):
-        print('{:<30} {:>12} ± {:.2f}%'.format(name, result.mean, result.error))
+        print('{:<30} {:>12.2f} ± {:.2f}%'.format(name, result.mean, result.error))
