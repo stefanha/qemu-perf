@@ -14,8 +14,8 @@ class Result:
         self.error = (self.max - self.min) / self.mean / 2 * 100
 
 def process_iops(json_path):
-    obj = json.load(open(json_path, 'r'))
-    return obj.get('disk_util', [{}])[0].get('read_ios', 0)
+    obj = json.load(open(json_path, 'rt'))
+    return obj.get('jobs', [{}])[0].get('read', {'iops': 0}).get('iops', 0)
 
 def process_run(run_dir):
     '''Return a Result for a run'''
