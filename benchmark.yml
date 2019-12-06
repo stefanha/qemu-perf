@@ -70,8 +70,11 @@
         state: present
         name: ['libguestfs-tools', 'libvirt-daemon']
 
+   - name: configure libvirt QEMU settings
+     copy: src=files/qemu.conf-vfio dest=/etc/libvirt/qemu.conf mode=644
+
    - name: start libvirtd service
-     service: name=libvirtd state=started
+     service: name=libvirtd state=reloaded
 
    - name: create vm image
      shell: virt-builder fedora-30 --quiet --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --write '/root/.ssh/authorized_keys:{{ lookup("file", lookup("env", "HOME") + "/.ssh/id_rsa.pub") }}' --chmod '0600:/root/.ssh/authorized_keys' --selinux-relabel creates=/var/lib/libvirt/images/test.img
@@ -117,6 +120,13 @@
      shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
    - name: write NVMe drive (second pass)
      shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+
+- name: set up vfio-pci
+  hosts: hosts
+  remote_user: root
+  tasks:
+    - name: bind the nvme drive to vfio-pci
+      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
 
 - name: start VM
   hosts: hosts
@@ -166,3 +176,10 @@
   tasks:
    - name: stop QEMU
      command: /sbin/shutdown -t now
+
+- name: clean up vfio-pci
+  hosts: hosts
+  remote_user: root
+  tasks:
+    - name: unbind the nvme drive to vfio-pci
+      command: driverctl --nosave unset-override 0000:5e:00.0
