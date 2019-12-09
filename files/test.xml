@@ -132,7 +132,7 @@
   </devices>
 <qemu:commandline>
    <qemu:arg value='-drive'/>
-   <qemu:arg value='file=nvme://0000:5e:00.0/1,id=drive-nvme,if=none'/>
+   <qemu:arg value='driver=null-co,size=375081926656,id=drive-nvme,if=none'/>
 </qemu:commandline>
 <qemu:commandline>
    <qemu:arg value='-device'/>
