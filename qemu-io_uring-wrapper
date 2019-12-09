@@ -1,0 +1,12 @@
+#!/bin/bash
+# Change QEMU aio=native command-line options to aio=io_uring
+
+declare -a opts
+
+i=0
+for opt in "$@"; do
+  opts[i]="${opt/aio=native/aio=io_uring}"
+  i=$((i + 1))
+done
+
+exec /root/qemu/x86_64-softmmu/qemu-system-x86_64 "${opts[@]}"
