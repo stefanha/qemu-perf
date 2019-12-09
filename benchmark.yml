@@ -71,7 +71,7 @@
         name: ['libguestfs-tools', 'libvirt-daemon']
 
    - name: configure libvirt QEMU settings
-     copy: src=files/qemu.conf-vfio dest=/etc/libvirt/qemu.conf mode=644
+     copy: src=files/qemu.conf-no-vfio dest=/etc/libvirt/qemu.conf mode=644
 
    - name: start libvirtd service
      service: name=libvirtd state=reloaded
@@ -110,23 +110,23 @@
    - name: build QEMU
      shell: ./configure --target-list=x86_64-softmmu && make -j4 chdir=/root/qemu
 
-- name: put NVMe flash translation later into well-known state
-  hosts : hosts
-  remote_user: root
-  tasks:
-   - name: discard NVMe drive
-     shell: blkdiscard /dev/nvme0n1p1
-   - name: write NVMe drive (first pass)
-     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
-   - name: write NVMe drive (second pass)
-     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+#- name: put NVMe flash translation later into well-known state
+#  hosts : hosts
+#  remote_user: root
+#  tasks:
+#   - name: discard NVMe drive
+#     shell: blkdiscard /dev/nvme0n1p1
+#   - name: write NVMe drive (first pass)
+#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+#   - name: write NVMe drive (second pass)
+#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
 
-- name: set up vfio-pci
-  hosts: hosts
-  remote_user: root
-  tasks:
-    - name: bind the nvme drive to vfio-pci
-      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
+#- name: set up vfio-pci
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#    - name: bind the nvme drive to vfio-pci
+#      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
 
 - name: start VM
   hosts: hosts
@@ -177,9 +177,9 @@
    - name: stop QEMU
      command: /sbin/shutdown -t now
 
-- name: clean up vfio-pci
-  hosts: hosts
-  remote_user: root
-  tasks:
-    - name: unbind the nvme drive to vfio-pci
-      command: driverctl --nosave unset-override 0000:5e:00.0
+#- name: clean up vfio-pci
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#    - name: unbind the nvme drive to vfio-pci
+#      command: driverctl --nosave unset-override 0000:5e:00.0
