@@ -6,6 +6,9 @@ runtime=60
 ramp_time=5
 gtod_reduce=1
 
+# The virtio5.req.0 MSI-X interrupt is on CPU#2, that's where we want to be
+cpus_allowed=2
+
 [job1]
 rw=randread
 bs=4K
