@@ -1,6 +1,6 @@
 [global]
 filename=/dev/vdb
-ioengine=libaio
+ioengine=pvsync2
 direct=1
 runtime=60
 ramp_time=5
