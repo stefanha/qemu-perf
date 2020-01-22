@@ -77,7 +77,7 @@
      service: name=libvirtd state=reloaded
 
    - name: create vm image
-     shell: virt-builder fedora-30 --quiet --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --write '/root/.ssh/authorized_keys:{{ lookup("file", lookup("env", "HOME") + "/.ssh/id_rsa.pub") }}' --chmod '0600:/root/.ssh/authorized_keys' --selinux-relabel creates=/var/lib/libvirt/images/test.img
+     shell: virt-builder fedora-30 --quiet --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --write '/root/.ssh/authorized_keys:{{ lookup("file", "files/authorized_keys") }}' --chmod '0600:/root/.ssh/authorized_keys' --root-password password:linux99 --selinux-relabel creates=/var/lib/libvirt/images/test.img
 
 - name: build QEMU
   hosts: hosts
@@ -85,9 +85,10 @@
   tasks:
    - name: set up QEMU git repo
      git:
-       repo=https://git.qemu.org/git/qemu.git
-       version=v4.2.0-rc0
+       repo=https://github.com/stefanha/qemu.git
+       version=virtio-blk-perf
        dest=/root/qemu
+       force=yes
 
    - name: ignore submodules in git-status(1)
      git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
@@ -127,6 +128,7 @@
 #  tasks:
 #    - name: bind the nvme drive to vfio-pci
 #      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
+#      ignore_errors: yes
 
 - name: start VM
   hosts: hosts
