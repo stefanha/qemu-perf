@@ -1,12 +1,13 @@
 [global]
-filename=/dev/vdb
+filename=/dev/nvme0n1p1
 ioengine=pvsync2
 direct=1
 runtime=60
 ramp_time=5
 gtod_reduce=1
+hipri=1
 
-# The virtio5.req.0 MSI-X interrupt is on CPU#2, that's where we want to be
+# There is an MSI-X interrupt on CPU#2, that's where we want to be
 cpus_allowed=2
 
 [job1]
