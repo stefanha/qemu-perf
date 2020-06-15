@@ -1,5 +1,5 @@
 [global]
-filename=/dev/nvme0n1p1
+filename=/dev/vdb
 ioengine=pvsync2
 direct=1
 runtime=60

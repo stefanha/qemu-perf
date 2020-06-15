@@ -164,7 +164,7 @@
   remote_user: root
   tasks:
    - name: disable I/O scheduler
-     shell: echo -n none > /sys/block/nvme0n1/queue/scheduler
+     shell: echo -n none > /sys/block/vdb/queue/scheduler
    - name: copy fio job files
      copy: src=files/fio.job dest=/root/fio.job mode=644
    - name: run fio
