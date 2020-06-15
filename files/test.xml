@@ -18,7 +18,7 @@
     <vcpupin vcpu='1' cpuset='2'/>
     <vcpupin vcpu='2' cpuset='4'/>
     <vcpupin vcpu='3' cpuset='6'/>
-    <iothreadpin iothread="1" cpuset="25"/>
+    <iothreadpin iothread="1" cpuset="8"/>
   </cputune>
   <numatune>
     <memory mode='strict' nodeset='0'/>
