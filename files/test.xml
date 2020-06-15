@@ -48,8 +48,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
-		  <!--<emulator>/root/qemu/qemu-kvm-poll-control-wrapper</emulator>-->
-		  <emulator>/root/qemu/x86_64-softmmu/qemu-system-x86_64</emulator>
+    <emulator>/root/qemu/qemu-kvm-poll-control-wrapper</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native'/>
       <source file='/var/lib/libvirt/images/test.img'/>
