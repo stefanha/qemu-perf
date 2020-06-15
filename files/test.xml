@@ -61,12 +61,12 @@
 	    </source>
     </hostdev>
     -->
-    <!--    <disk type='file' device='disk'>
+    <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native' iothread="1" />
       <source file='/dev/nvme0n1'/>
       <target dev='vdb' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
-    </disk> -->
+    </disk>
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
     </controller>
@@ -140,11 +140,11 @@
    <qemu:arg value='-drive'/>
    <qemu:arg value='driver=null-co,size=375081926656,id=drive-nvme,if=none'/>
   </qemu:commandline> -->
-  <!--  <qemu:commandline>
-   <qemu:arg value='-drive'/>
-   <qemu:arg value='file=nvme://0000:5e:00.0/1,id=drive-nvme,if=none'/>
-  </qemu:commandline> -->
   <!-- <qemu:commandline>
+   <qemu:arg value='-drive'/>
+   <qemu:arg value='file=nvme://0000:5e:00.0/1,format=raw,id=drive-nvme,if=none'/>
+  </qemu:commandline>
+  <qemu:commandline>
    <qemu:arg value='-device'/>
    <qemu:arg value='virtio-blk-pci,drive=drive-nvme,iothread=iothread1,scsi=off,bus=pci.7,addr=0x0,id=virtio-disk1,write-cache=on'/>
   </qemu:commandline> -->
