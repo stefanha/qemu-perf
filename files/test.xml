@@ -24,7 +24,7 @@
     <memory mode='strict' nodeset='0'/>
   </numatune>
   <os>
-    <type arch='x86_64' machine='pc-q35-3.1'>hvm</type>
+    <type arch='x86_64' machine='pc-q35-rhel8.2.0'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
@@ -48,7 +48,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
-    <emulator>/root/qemu/qemu-kvm-poll-control-wrapper</emulator>
+    <emulator>/root/qemu/x86_64-softmmu/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native'/>
       <source file='/var/lib/libvirt/images/test.img'/>
@@ -140,12 +140,14 @@
    <qemu:arg value='-drive'/>
    <qemu:arg value='driver=null-co,size=375081926656,id=drive-nvme,if=none'/>
   </qemu:commandline> -->
-  <!-- <qemu:commandline>
-   <qemu:arg value='-drive'/>
-   <qemu:arg value='file=nvme://0000:5e:00.0/1,format=raw,id=drive-nvme,if=none'/>
+<!--
+  <qemu:commandline>
+   <qemu:arg value='-blockdev'/>
+   <qemu:arg value='driver=nvme,device=0000:5e:00.0,namespace=1,node-name=drive-nvme'/>
   </qemu:commandline>
   <qemu:commandline>
    <qemu:arg value='-device'/>
    <qemu:arg value='virtio-blk-pci,drive=drive-nvme,iothread=iothread1,scsi=off,bus=pci.7,addr=0x0,id=virtio-disk1,write-cache=on'/>
-  </qemu:commandline> -->
+  </qemu:commandline>
+-->
 </domain>

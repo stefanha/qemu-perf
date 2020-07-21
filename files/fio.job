@@ -1,13 +1,11 @@
 [global]
 filename=/dev/vdb
-ioengine=pvsync2
+ioengine=libaio
 direct=1
 runtime=60
 ramp_time=5
 gtod_reduce=1
-hipri=1
 
-# There is an MSI-X interrupt on CPU#2, that's where we want to be
 cpus_allowed=2
 
 [job1]
