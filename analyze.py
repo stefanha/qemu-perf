@@ -13,13 +13,13 @@ class Result:
         self.mean = sum(samples) / len(samples)
         self.error = (self.max - self.min) / self.mean / 2 * 100
 
-def process_iops(json_path):
+def process_iops(json_path, rw):
     obj = json.load(open(json_path, 'rt'))
-    return obj.get('jobs', [{}])[0].get('read', {'iops': 0}).get('iops', 0)
+    return sum(j.get(rw, {'iops', 0}).get('iops', 0) for j in obj.get('jobs', [{}]))
 
 def process_run(run_dir):
     '''Return a Result for a run'''
-    samples = [process_iops(os.path.join(run_dir, d)) for d in os.listdir(run_dir)]
+    samples = [process_iops(os.path.join(run_dir, d), 'read') for d in os.listdir(run_dir)]
     return Result(samples)
 
 def process_runs(runs_dir):
