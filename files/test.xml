@@ -138,16 +138,16 @@
       <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
     </rng>
   </devices>
+<!--
   <qemu:commandline>
    <qemu:arg value='-blockdev'/>
    <qemu:arg value='driver=null-co,size=375081926656,node-name=drive-nvme'/>
   </qemu:commandline>
-<!--
+-->
   <qemu:commandline>
    <qemu:arg value='-blockdev'/>
    <qemu:arg value='driver=file,filename=/dev/nvme0n1,aio=native,node-name=drive-nvme,cache.direct=on'/>
   </qemu:commandline>
--->
   <qemu:commandline>
    <qemu:arg value='-device'/>
    <qemu:arg value='virtio-blk-pci,drive=drive-nvme,iothread=iothread1,scsi=off,bus=pci.7,addr=0x0,id=virtio-disk1,write-cache=on,num-queues=4,packed=on'/>
