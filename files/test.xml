@@ -146,7 +146,7 @@
 -->
   <qemu:commandline>
    <qemu:arg value='-blockdev'/>
-   <qemu:arg value='driver=file,filename=/dev/nvme0n1,aio=native,node-name=drive-nvme,cache.direct=on'/>
+   <qemu:arg value='driver=file,filename=/dev/nvme0n1,aio=io_uring,node-name=drive-nvme,cache.direct=on'/>
   </qemu:commandline>
   <qemu:commandline>
    <qemu:arg value='-device'/>
