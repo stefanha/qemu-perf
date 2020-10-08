@@ -56,12 +56,11 @@
       <target dev='vda' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </disk>
-    <!--    <hostdev mode='subsystem' type='pci' managed='yes'>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
 	    <source>
 		    <address domain='0x0000' bus='0x5e' slot='0x00' function='0x0'/>
 	    </source>
     </hostdev>
-    -->
 <!--
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native' iothread="1" />
@@ -151,6 +150,7 @@
    <qemu:arg value='driver=file,filename=/dev/nvme0n1,aio=io_uring,node-name=drive-nvme,cache.direct=on'/>
   </qemu:commandline>
 -->
+<!--
   <qemu:commandline>
    <qemu:arg value='-blockdev'/>
    <qemu:arg value='driver=nvme,device=0000:5e:00.0,namespace=1,node-name=drive-nvme'/>
@@ -159,4 +159,5 @@
    <qemu:arg value='-device'/>
    <qemu:arg value='virtio-blk-pci,drive=drive-nvme,iothread=iothread1,scsi=off,bus=pci.7,addr=0x0,id=virtio-disk1,write-cache=on,num-queues=4,packed=on'/>
   </qemu:commandline>
+-->
 </domain>
