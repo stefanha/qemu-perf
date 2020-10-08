@@ -1,0 +1,6 @@
+---
+- name: run benchmark
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - include_tasks: run_fio.yml

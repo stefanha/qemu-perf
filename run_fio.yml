@@ -1,0 +1,11 @@
+---
+- name: disable I/O scheduler
+  shell: echo -n none > /sys/block/nvme0n1/queue/scheduler
+- name: copy fio job files
+  copy: src=files/fio.job dest=/root/fio.job mode=644
+- name: run fio
+  shell: fio --output-format=json --output fio-output-{{ item[0] }}-{{ item[1] }}.json --filename /dev/nvme0n1 --rw {{ item[0] }} --bs {{ item[1] }} --numjobs 1 fio.job
+  loop: "{{ ['randread', 'randwrite'] |product(['4K', '8K', '16K', '32K', '64K', '128K'])|list }}"
+- name: collect benchmark results
+  fetch: src=fio-output-{{ item[0] }}-{{ item[1] }}.json dest=/tmp/ flat=yes
+  loop: "{{ ['randread', 'randwrite'] |product(['4K', '8K', '16K', '32K', '64K', '128K'])|list }}"

@@ -1,14 +1,11 @@
 [global]
-filename=/dev/vdb
 ioengine=pvsync2
 hipri=1
 direct=1
 runtime=60
 ramp_time=5
-gtod_reduce=1
+clocksource=cpu
 
-cpus_allowed=2
+#cpus_allowed=2
 
 [job1]
-rw=randread
-bs=4K
