@@ -144,9 +144,15 @@
    <qemu:arg value='driver=null-co,size=375081926656,node-name=drive-nvme'/>
   </qemu:commandline>
 -->
+<!--
   <qemu:commandline>
    <qemu:arg value='-blockdev'/>
    <qemu:arg value='driver=file,filename=/dev/nvme0n1,aio=io_uring,node-name=drive-nvme,cache.direct=on'/>
+  </qemu:commandline>
+-->
+  <qemu:commandline>
+   <qemu:arg value='-blockdev'/>
+   <qemu:arg value='driver=nvme,device=0000:5e:00.0,namespace=1,node-name=drive-nvme'/>
   </qemu:commandline>
   <qemu:commandline>
    <qemu:arg value='-device'/>
