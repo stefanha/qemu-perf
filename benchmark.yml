@@ -83,6 +83,9 @@
   hosts: hosts
   remote_user: root
   tasks:
+   - name: remove pull request tags to prevent fetch --tags failures
+     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
+
    - name: set up QEMU git repo
      git:
        repo=https://github.com/stefanha/qemu.git
