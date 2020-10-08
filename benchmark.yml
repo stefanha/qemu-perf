@@ -86,7 +86,7 @@
    - name: set up QEMU git repo
      git:
        repo=https://github.com/stefanha/qemu.git
-       version=polling
+       version=64a3b4d53d
        dest=/root/qemu
        force=yes
 
