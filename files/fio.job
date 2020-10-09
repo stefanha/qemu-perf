@@ -6,6 +6,6 @@ runtime=60
 ramp_time=5
 clocksource=cpu
 
-#cpus_allowed=2
+cpus_allowed=2
 
 [job1]
