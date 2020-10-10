@@ -77,7 +77,7 @@
      service: name=libvirtd state=reloaded
 
    - name: create vm image
-     shell: virt-builder fedora-31 --quiet --size 16G --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --write '/root/.ssh/authorized_keys:{{ lookup("file", "files/authorized_keys") }}' --chmod '0600:/root/.ssh/authorized_keys' --root-password password:linux99 --selinux-relabel creates=/var/lib/libvirt/images/test.img
+     shell: virt-builder fedora-31 --quiet --size 16G --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --upload '/root/.ssh/authorized_keys:/root/.ssh/authorized_keys' --chmod '0600:/root/.ssh/authorized_keys' --root-password password:linux99 --selinux-relabel creates=/var/lib/libvirt/images/test.img
 
 - name: build QEMU
   hosts: hosts
