@@ -6,7 +6,6 @@ corresponds to the configuration you want to benchmark).
 
 The important files are as follows:
 
-- files/authorized\_keys - ssh public keys for guest that you need to provide
 - files/fio.job - the fio(1) benchmark configuration file
 - files/test.xml - the libvirt domain XML
 - benchmark.yml - the Ansible playbook
