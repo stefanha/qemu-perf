@@ -134,13 +134,13 @@
 #        path: /dev/nvme0n1
 #        mode: '0666'
 #
-#- name: set up vfio-pci
-#  hosts: hosts
-#  remote_user: root
-#  tasks:
-#    - name: bind the nvme drive to vfio-pci
-#      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
-#      ignore_errors: yes
+- name: set up vfio-pci
+  hosts: hosts
+  remote_user: root
+  tasks:
+    - name: bind the nvme drive to vfio-pci
+      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
+      ignore_errors: yes
 
 - name: start VM
   hosts: hosts
@@ -184,9 +184,9 @@
    - name: stop QEMU
      command: /sbin/shutdown -t now
 
-#- name: clean up vfio-pci
-#  hosts: hosts
-#  remote_user: root
-#  tasks:
-#    - name: unbind the nvme drive to vfio-pci
-#      command: driverctl --nosave unset-override 0000:5e:00.0
+- name: clean up vfio-pci
+  hosts: hosts
+  remote_user: root
+  tasks:
+    - name: unbind the nvme drive to vfio-pci
+      command: driverctl --nosave unset-override 0000:5e:00.0
