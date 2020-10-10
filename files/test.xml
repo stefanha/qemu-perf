@@ -66,7 +66,7 @@
     </hostdev>
 -->
     <disk type='file' device='disk'>
-      <driver name='qemu' type='raw' cache='none' io='native' iothread='1' />
+      <driver name='qemu' type='raw' cache='none' io='native' iothread='1' queues='4' />
       <source file='/dev/nvme0n1'/>
       <target dev='vdb' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
