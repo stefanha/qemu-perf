@@ -1,6 +1,8 @@
 ---
 - name: disable I/O scheduler
   shell: echo -n none > /sys/block/vdb/queue/scheduler
+- name: disable blk-io_poll
+  shell: echo -n 0 > /sys/block/vdb/queue/io_poll
 - name: copy fio job files
   copy: src=files/fio.job dest=/root/fio.job mode=644
 - name: run fio
