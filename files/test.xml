@@ -49,7 +49,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
-    <emulator>/root/qemu/qemu-kvm-poll-control-wrapper</emulator>
+    <emulator>/root/qemu/qemu-kvm-full-polling-wrapper</emulator>
     <controller type='scsi' index='0' model='virtio-scsi'>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </controller>
