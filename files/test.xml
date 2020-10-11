@@ -50,11 +50,13 @@
   </pm>
   <devices>
     <emulator>/root/qemu/qemu-kvm-poll-control-wrapper</emulator>
+    <controller type='scsi' index='0' model='virtio-scsi'>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+    </controller>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native'/>
       <source file='/var/lib/libvirt/images/test.img'/>
-      <target dev='vda' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+      <target dev='sda' bus='scsi'/>
     </disk>
     <hostdev mode='subsystem' type='pci' managed='yes'>
 	    <source>
