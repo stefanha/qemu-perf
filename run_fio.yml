@@ -2,12 +2,10 @@
 - name: disable I/O scheduler
   shell: echo -n none > /sys/block/vda/queue/scheduler
 - name: disable blk-io_poll
-  shell: echo -n 1 > /sys/block/vda/queue/io_poll
+  shell: echo -n 0 > /sys/block/vda/queue/io_poll
 - name: copy fio job files
   copy: src=files/fio.job dest=/root/fio.job mode=644
 - name: run fio
-  shell: fio --output-format=json --output fio-output-{{ item[0] }}-{{ item[1] }}.json --filename /dev/vda --rw {{ item[0] }} --bs {{ item[1] }} --numjobs 1 fio.job
-  loop: "{{ ['randread', 'randwrite'] |product(['4K', '8K', '16K', '32K', '64K', '128K'])|list }}"
+  shell: fio --output-format=json --output fio-output.json --filename /dev/vda --rw readread --bs 4k --numjobs 16 --iodepth 8 fio.job
 - name: collect benchmark results
-  fetch: src=fio-output-{{ item[0] }}-{{ item[1] }}.json dest=/tmp/ flat=yes
-  loop: "{{ ['randread', 'randwrite'] |product(['4K', '8K', '16K', '32K', '64K', '128K'])|list }}"
+  fetch: src=fio-output.json dest=/tmp/ flat=yes

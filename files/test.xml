@@ -49,7 +49,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
-    <emulator>/root/qemu/qemu-kvm-full-polling-wrapper</emulator>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
     <controller type='scsi' index='0' model='virtio-scsi'>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </controller>
@@ -65,14 +65,12 @@
 	    </source>
     </hostdev>
 -->
-<!--
     <disk type='file' device='disk'>
-      <driver name='qemu' type='raw' cache='none' io='native' iothread='1' queues='4' />
+      <driver name='qemu' type='raw' cache='none' io='native' iothread='1' />
       <source file='/dev/nvme0n1'/>
       <target dev='vdb' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </disk>
--->
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
     </controller>
@@ -153,7 +151,6 @@
    <qemu:arg value='-blockdev'/>
    <qemu:arg value='driver=file,filename=/dev/nvme0n1,aio=io_uring,node-name=drive-nvme,cache.direct=on'/>
   </qemu:commandline>
--->
   <qemu:commandline>
    <qemu:arg value='-blockdev'/>
    <qemu:arg value='driver=nvme,device=0000:5e:00.0,namespace=1,node-name=drive-nvme'/>
@@ -162,4 +159,5 @@
    <qemu:arg value='-device'/>
    <qemu:arg value='virtio-blk-pci,drive=drive-nvme,iothread=iothread1,scsi=off,bus=pci.7,addr=0x0,id=virtio-disk1,write-cache=on,num-queues=4,packed=on'/>
   </qemu:commandline>
+-->
 </domain>
