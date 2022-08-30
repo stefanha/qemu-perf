@@ -1,13 +1,21 @@
 [global]
 filename=/dev/vdb
-ioengine=libaio
+ioengine=io_uring
+nonvectored=1
+registerfiles=1
 direct=1
 runtime=60
 ramp_time=5
-gtod_reduce=1
-
+thread=1
+norandommap=1
+random_generator=lfsr
+randrepeat=0
+group_reporting=1
 cpus_allowed=2
+numa_mem_policy=bind:0
+lat_percentiles=1
+slat_percentiles=0
+clat_percentiles=0
 
 [job1]
 rw=randread
-bs=4K
