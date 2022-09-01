@@ -92,21 +92,21 @@
    - name: create vm image
      shell: virt-builder fedora-36 --quiet --size 16G --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --write '/root/.ssh/authorized_keys:{{ lookup("file", "files/authorized_keys") }}' --chmod '0600:/root/.ssh/authorized_keys' --root-password password:linux99 --selinux-relabel creates=/var/lib/libvirt/images/test.img
 
-- name: build QEMU
+- name: build QEMU and libblkio
   hosts: hosts
   remote_user: root
   tasks:
    - name: set up QEMU git repo
      git:
        repo=https://gitlab.com/stefanha/qemu.git
-       version=libblkio
+       version=be40086984
        dest=/root/stefanha/qemu
        force=yes
 
    - name: ignore submodules in git-status(1)
      git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/stefanha/qemu
 
-   - name: set up QEMU git repo
+   - name: set up libblkio git repo
      git:
        repo=https://gitlab.com/libblkio/libblkio.git
        version=v0.0.1
@@ -197,10 +197,16 @@
    - name: copy fio job files
      copy: src=files/fio.job dest=/root/fio.job mode=644
    - name: run fio
-     shell: rm -rf fio-output && mkdir fio-output && for qd in 1 4 16 64 256; do for i in 1 2 3 4 5; do fio --output-format=json --output fio-output/qd-$qd-run-$i.json --bs=512 --iodepth=$qd fio.job; done; done
+     shell: rm -rf fio-output && mkdir fio-output && for qd in 1; do for i in 1 2 3; do fio --output-format=json --output fio-output/qd-$qd-run-$i.json --bs=512 --iodepth=$qd fio.job; done; done
    - name: create local results directory
      file:
        path: /tmp/fio-output
+       state: directory
+       mode: 0755
+     delegate_to: localhost
+   - name: create local results directory
+     file:
+       path: /tmp/fio-output/bounce-buf
        state: directory
        mode: 0755
      delegate_to: localhost
@@ -211,7 +217,7 @@
    - name: collect benchmark results
      synchronize:
        src: fio-output/
-       dest: /tmp/fio-output/
+       dest: /tmp/fio-output/bounce-buf/
        delete: yes
        recursive: yes
        mode: pull
@@ -240,3 +246,81 @@
 #  tasks:
 #    - name: unbind the nvme drive to vfio-pci
 #      command: driverctl --nosave unset-override 0000:5e:00.0
+
+- name: build QEMU
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - name: set up QEMU git repo
+     git:
+       repo=https://gitlab.com/stefanha/qemu.git
+       version=libblkio
+       dest=/root/stefanha/qemu
+       force=yes
+
+   - name: build QEMU
+     shell: make -j4 chdir=/root/stefanha/qemu
+
+- name: start VM
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - name: start qsd
+     shell: systemd-run --unit=qsd taskset --cpu-list 10 /root/stefanha/qemu/build/storage-daemon/qemu-storage-daemon --object iothread,id=iothread0 --blockdev driver=host_device,filename=/dev/nvme0n1,aio=native,cache.direct=on,node-name=drive0 --export vhost-user-blk,node-name=drive0,addr.type=unix,addr.path=/var/tmp/vhost-user-blk.sock,id=vhost-user-blk0,writable=on,iothread=iothread0
+
+   - name: make vhost-user-blk.sock writeable
+     shell: sleep 1 && chmod 666 /var/tmp/vhost-user-blk.sock
+
+   - name: start VM
+     virt:
+       name: test
+       state: running
+
+   - name: wait for SSH
+     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
+
+- name: run benchmark
+  hosts: vms
+  remote_user: root
+  tasks:
+   - name: disable I/O scheduler
+     shell: echo -n none > /sys/block/vdb/queue/scheduler
+   - name: copy fio job files
+     copy: src=files/fio.job dest=/root/fio.job mode=644
+   - name: run fio
+     shell: rm -rf fio-output && mkdir fio-output && for qd in 1; do for i in 1 2 3; do fio --output-format=json --output fio-output/qd-$qd-run-$i.json --bs=512 --iodepth=$qd fio.job; done; done
+   - name: create local results directory
+     file:
+       path: /tmp/fio-output/registered-buf
+       state: directory
+       mode: 0755
+     delegate_to: localhost
+   - name: install rsync
+     dnf:
+        state: present
+        name: 'rsync'
+   - name: collect benchmark results
+     synchronize:
+       src: fio-output/
+       dest: /tmp/fio-output/registered-buf/
+       delete: yes
+       recursive: yes
+       mode: pull
+
+- name: stop VM
+  hosts: vms
+  remote_user: root
+  tasks:
+   - name: stop QEMU
+     command: /sbin/shutdown -t now
+
+- name: stop qsd
+  hosts: hosts
+  remote_user: root
+  tasks:
+   - name: stop VM
+     virt:
+       name: test
+       state: shutdown
+   - name: stop qsd
+     shell: systemctl stop qsd

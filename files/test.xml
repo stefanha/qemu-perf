@@ -33,6 +33,10 @@
     <acpi/>
     <apic/>
     <vmport state='off'/>
+    <kvm>
+        <hint-dedicated state='on'/>
+	<poll-control state='on'/>
+    </kvm>
   </features>
   <cpu mode='host-passthrough' check='partial'>
     <model fallback='allow'/>

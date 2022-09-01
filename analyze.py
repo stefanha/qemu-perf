@@ -15,7 +15,7 @@ class Result:
 
 def process_iops(json_path):
     obj = json.load(open(json_path, 'rt'))
-    return obj.get('jobs', [{}])[0].get('read', {'iops': 0}).get('iops', 0)
+    return obj.get('jobs', [{}])[0].get('read', {}).get('lat_ns', {}).get('mean', 0) / 1000 # to microseconds
 
 def process_run(run_dir):
     '''Return a Result for a run'''
@@ -38,6 +38,6 @@ if __name__ == '__main__':
     runs_dir = sys.argv[1]
     runs_data = process_runs(runs_dir)
 
-    print('{:<30} {:>12}   {}'.format('Name', 'IOPS', 'Error'))
+    print('{:<30} {:>12}   {}'.format('Name', 'Latency (us)', 'Error'))
     for name, result in sorted(runs_data.items(), key=lambda x: x[0]):
         print('{:<30} {:>12.2f} ± {:.2f}%'.format(name, result.mean, result.error))
