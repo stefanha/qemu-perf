@@ -36,6 +36,7 @@
              'libseccomp-devel',
              'libssh2-devel',
              'libtool',
+             'liburing-devel',
              'libusbx-devel',
              'libuuid-devel',
              'lzo-devel',
@@ -84,7 +85,7 @@
         name: ['guestfs-tools', 'libvirt-daemon']
 
    - name: configure libvirt QEMU settings
-     copy: src=files/qemu.conf-no-vfio dest=/etc/libvirt/qemu.conf mode=644
+     copy: src=files/qemu.conf-vfio dest=/etc/libvirt/qemu.conf mode=644
 
    - name: start libvirtd service
      service: name=libvirtd state=reloaded
@@ -99,7 +100,7 @@
    - name: set up QEMU git repo
      git:
        repo=https://gitlab.com/stefanha/qemu.git
-       version=be40086984
+       version=libblkio
        dest=/root/stefanha/qemu
        force=yes
 
@@ -132,7 +133,7 @@
      shell: meson setup build && meson compile -C build && meson install -C build && ldconfig /usr/local/lib64 chdir=/root/stefanha/libblkio
 
    - name: build QEMU
-     shell: ./configure --target-list=x86_64-softmmu --enable-blkio && make -j4 chdir=/root/stefanha/qemu
+     shell: ./configure --target-list=x86_64-softmmu --enable-blkio --enable-linux-io-uring && make -j4 chdir=/root/stefanha/qemu
 
 #- name: put NVMe flash translation later into well-known state
 #  hosts : hosts
@@ -165,13 +166,7 @@
    - name: define VM
      virt:
        command: define
-       xml: "{{ lookup('file', 'files/test.xml') }}"
-
-   - name: start qsd
-     shell: systemd-run --unit=qsd taskset --cpu-list 10 /root/stefanha/qemu/build/storage-daemon/qemu-storage-daemon --object iothread,id=iothread0 --blockdev driver=host_device,filename=/dev/nvme0n1,aio=native,cache.direct=on,node-name=drive0 --export vhost-user-blk,node-name=drive0,addr.type=unix,addr.path=/var/tmp/vhost-user-blk.sock,id=vhost-user-blk0,writable=on,iothread=iothread0
-
-   - name: make vhost-user-blk.sock writeable
-     shell: sleep 1 && chmod 666 /var/tmp/vhost-user-blk.sock
+       xml: "{{ lookup('file', 'files/test-libblkio.xml') }}"
 
    - name: start VM
      virt:
@@ -197,7 +192,7 @@
    - name: copy fio job files
      copy: src=files/fio.job dest=/root/fio.job mode=644
    - name: run fio
-     shell: rm -rf fio-output && mkdir fio-output && for qd in 1; do for i in 1 2 3; do fio --output-format=json --output fio-output/qd-$qd-run-$i.json --bs=512 --iodepth=$qd fio.job; done; done
+     shell: rm -rf fio-output && mkdir fio-output && for qd in 1 4 16 64 256; do for i in 1 2 3 4 5; do fio --output-format=json --output fio-output/qd-$qd-run-$i.json --bs=512 --iodepth=$qd fio.job; done; done
    - name: create local results directory
      file:
        path: /tmp/fio-output
@@ -206,7 +201,7 @@
      delegate_to: localhost
    - name: create local results directory
      file:
-       path: /tmp/fio-output/bounce-buf
+       path: /tmp/fio-output/blkio-io_uring
        state: directory
        mode: 0755
      delegate_to: localhost
@@ -217,7 +212,7 @@
    - name: collect benchmark results
      synchronize:
        src: fio-output/
-       dest: /tmp/fio-output/bounce-buf/
+       dest: /tmp/fio-output/blkio-io_uring
        delete: yes
        recursive: yes
        mode: pull
@@ -229,16 +224,14 @@
    - name: stop QEMU
      command: /sbin/shutdown -t now
 
-- name: stop qsd
+- name: wait for VM to stop
   hosts: hosts
   remote_user: root
   tasks:
-   - name: stop VM
+   - name: wait for VM to stop
      virt:
        name: test
        state: shutdown
-   - name: stop qsd
-     shell: systemctl stop qsd
 
 #- name: clean up vfio-pci
 #  hosts: hosts
@@ -247,29 +240,14 @@
 #    - name: unbind the nvme drive to vfio-pci
 #      command: driverctl --nosave unset-override 0000:5e:00.0
 
-- name: build QEMU
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: set up QEMU git repo
-     git:
-       repo=https://gitlab.com/stefanha/qemu.git
-       version=libblkio
-       dest=/root/stefanha/qemu
-       force=yes
-
-   - name: build QEMU
-     shell: make -j4 chdir=/root/stefanha/qemu
-
 - name: start VM
   hosts: hosts
   remote_user: root
   tasks:
-   - name: start qsd
-     shell: systemd-run --unit=qsd taskset --cpu-list 10 /root/stefanha/qemu/build/storage-daemon/qemu-storage-daemon --object iothread,id=iothread0 --blockdev driver=host_device,filename=/dev/nvme0n1,aio=native,cache.direct=on,node-name=drive0 --export vhost-user-blk,node-name=drive0,addr.type=unix,addr.path=/var/tmp/vhost-user-blk.sock,id=vhost-user-blk0,writable=on,iothread=iothread0
-
-   - name: make vhost-user-blk.sock writeable
-     shell: sleep 1 && chmod 666 /var/tmp/vhost-user-blk.sock
+   - name: define VM
+     virt:
+       command: define
+       xml: "{{ lookup('file', 'files/test-qemu.xml') }}"
 
    - name: start VM
      virt:
@@ -288,10 +266,10 @@
    - name: copy fio job files
      copy: src=files/fio.job dest=/root/fio.job mode=644
    - name: run fio
-     shell: rm -rf fio-output && mkdir fio-output && for qd in 1; do for i in 1 2 3; do fio --output-format=json --output fio-output/qd-$qd-run-$i.json --bs=512 --iodepth=$qd fio.job; done; done
+     shell: rm -rf fio-output && mkdir fio-output && for qd in 1 4 16 64 256; do for i in 1 2 3 4 5; do fio --output-format=json --output fio-output/qd-$qd-run-$i.json --bs=512 --iodepth=$qd fio.job; done; done
    - name: create local results directory
      file:
-       path: /tmp/fio-output/registered-buf
+       path: /tmp/fio-output/qemu-io_uring
        state: directory
        mode: 0755
      delegate_to: localhost
@@ -302,7 +280,7 @@
    - name: collect benchmark results
      synchronize:
        src: fio-output/
-       dest: /tmp/fio-output/registered-buf/
+       dest: /tmp/fio-output/qemu-io_uring
        delete: yes
        recursive: yes
        mode: pull
@@ -314,13 +292,11 @@
    - name: stop QEMU
      command: /sbin/shutdown -t now
 
-- name: stop qsd
+- name: wait for VM to stop
   hosts: hosts
   remote_user: root
   tasks:
-   - name: stop VM
+   - name: wait for VM to stop
      virt:
        name: test
        state: shutdown
-   - name: stop qsd
-     shell: systemctl stop qsd

@@ -1,0 +1,381 @@
+{
+  "fio version" : "fio-3.29",
+<<<<<<<< HEAD:results/bounce-buf/qd-1-run-3.json
+  "timestamp" : 1662730000,
+  "timestamp_ms" : 1662730000319,
+  "time" : "Fri Sep  9 09:26:40 2022",
+========
+  "timestamp" : 1662661628,
+  "timestamp_ms" : 1662661628442,
+  "time" : "Thu Sep  8 14:27:08 2022",
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/blkio-io_uring/qd-1-run-2.json
+  "global options" : {
+    "bs" : "512",
+    "iodepth" : "1",
+    "ioengine" : "io_uring",
+    "direct" : "1",
+    "runtime" : "60",
+    "ramp_time" : "5",
+    "thread" : "1",
+    "norandommap" : "1",
+    "random_generator" : "lfsr",
+    "randrepeat" : "0",
+    "group_reporting" : "1",
+    "cpus_allowed" : "2",
+    "numa_mem_policy" : "bind:0",
+    "lat_percentiles" : "1",
+    "slat_percentiles" : "0",
+    "clat_percentiles" : "0",
+    "filename" : "/dev/vdb",
+    "nonvectored" : "1",
+    "registerfiles" : "1"
+  },
+  "jobs" : [
+    {
+      "jobname" : "job1",
+      "groupid" : 0,
+      "error" : 0,
+      "eta" : 0,
+      "elapsed" : 66,
+      "job options" : {
+        "rw" : "randread"
+      },
+      "read" : {
+<<<<<<<< HEAD:results/bounce-buf/qd-1-run-3.json
+        "io_bytes" : 133453824,
+        "io_kbytes" : 130326,
+        "bw_bytes" : 2224193,
+        "bw" : 2172,
+        "iops" : 4344.127598,
+        "runtime" : 60001,
+        "total_ios" : 260652,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 3484,
+          "max" : 81815,
+          "mean" : 4340.750418,
+          "stddev" : 922.874748,
+          "N" : 260652
+        },
+        "clat_ns" : {
+          "min" : 156392,
+          "max" : 873248,
+          "mean" : 224901.512427,
+          "stddev" : 11392.867985,
+          "N" : 260652
+        },
+        "lat_ns" : {
+          "min" : 170618,
+          "max" : 877515,
+          "mean" : 229424.102182,
+          "stddev" : 11288.958888,
+          "N" : 260652,
+          "percentile" : {
+            "1.000000" : 214016,
+            "5.000000" : 216064,
+            "10.000000" : 218112,
+            "20.000000" : 220160,
+            "30.000000" : 224256,
+            "40.000000" : 226304,
+            "50.000000" : 228352,
+            "60.000000" : 230400,
+            "70.000000" : 232448,
+            "80.000000" : 236544,
+            "90.000000" : 240640,
+            "95.000000" : 246784,
+            "99.000000" : 268288,
+            "99.500000" : 280576,
+            "99.900000" : 292864,
+            "99.950000" : 301056,
+            "99.990000" : 317440
+          }
+        },
+        "bw_min" : 2158,
+        "bw_max" : 2185,
+        "bw_agg" : 99.997078,
+        "bw_mean" : 2172.383333,
+        "bw_dev" : 6.286150,
+        "bw_samples" : 120,
+        "iops_min" : 4316,
+        "iops_max" : 4370,
+        "iops_mean" : 4344.766667,
+        "iops_stddev" : 12.572301,
+========
+        "io_bytes" : 1208928256,
+        "io_kbytes" : 1180594,
+        "bw_bytes" : 20148468,
+        "bw" : 19676,
+        "iops" : 39352.477459,
+        "runtime" : 60001,
+        "total_ios" : 2361188,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 1719,
+          "max" : 773774,
+          "mean" : 2400.495196,
+          "stddev" : 1221.351059,
+          "N" : 2361188
+        },
+        "clat_ns" : {
+          "min" : 154,
+          "max" : 807116,
+          "mean" : 22350.550993,
+          "stddev" : 8408.844464,
+          "N" : 2361188
+        },
+        "lat_ns" : {
+          "min" : 20011,
+          "max" : 835589,
+          "mean" : 24877.871719,
+          "stddev" : 8436.755919,
+          "N" : 2361188,
+          "percentile" : {
+            "1.000000" : 20608,
+            "5.000000" : 20864,
+            "10.000000" : 21120,
+            "20.000000" : 21120,
+            "30.000000" : 21376,
+            "40.000000" : 21632,
+            "50.000000" : 21632,
+            "60.000000" : 21888,
+            "70.000000" : 22144,
+            "80.000000" : 22912,
+            "90.000000" : 35072,
+            "95.000000" : 49408,
+            "99.000000" : 56576,
+            "99.500000" : 57088,
+            "99.900000" : 60160,
+            "99.950000" : 62208,
+            "99.990000" : 69120
+          }
+        },
+        "bw_min" : 19534,
+        "bw_max" : 19848,
+        "bw_agg" : 100.000000,
+        "bw_mean" : 19679.666667,
+        "bw_dev" : 54.610821,
+        "bw_samples" : 120,
+        "iops_min" : 39068,
+        "iops_max" : 39696,
+        "iops_mean" : 39359.333333,
+        "iops_stddev" : 109.221641,
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/blkio-io_uring/qd-1-run-2.json
+        "iops_samples" : 120
+      },
+      "write" : {
+        "io_bytes" : 0,
+        "io_kbytes" : 0,
+        "bw_bytes" : 0,
+        "bw" : 0,
+        "iops" : 0.000000,
+        "runtime" : 0,
+        "total_ios" : 0,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "clat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "bw_min" : 0,
+        "bw_max" : 0,
+        "bw_agg" : 0.000000,
+        "bw_mean" : 0.000000,
+        "bw_dev" : 0.000000,
+        "bw_samples" : 0,
+        "iops_min" : 0,
+        "iops_max" : 0,
+        "iops_mean" : 0.000000,
+        "iops_stddev" : 0.000000,
+        "iops_samples" : 0
+      },
+      "trim" : {
+        "io_bytes" : 0,
+        "io_kbytes" : 0,
+        "bw_bytes" : 0,
+        "bw" : 0,
+        "iops" : 0.000000,
+        "runtime" : 0,
+        "total_ios" : 0,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "clat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "bw_min" : 0,
+        "bw_max" : 0,
+        "bw_agg" : 0.000000,
+        "bw_mean" : 0.000000,
+        "bw_dev" : 0.000000,
+        "bw_samples" : 0,
+        "iops_min" : 0,
+        "iops_max" : 0,
+        "iops_mean" : 0.000000,
+        "iops_stddev" : 0.000000,
+        "iops_samples" : 0
+      },
+      "sync" : {
+        "total_ios" : 0,
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        }
+      },
+      "job_runtime" : 60000,
+<<<<<<<< HEAD:results/bounce-buf/qd-1-run-3.json
+      "usr_cpu" : 0.795000,
+      "sys_cpu" : 2.598333,
+      "ctx" : 261126,
+========
+      "usr_cpu" : 4.448333,
+      "sys_cpu" : 13.831667,
+      "ctx" : 2364677,
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/blkio-io_uring/qd-1-run-2.json
+      "majf" : 0,
+      "minf" : 0,
+      "iodepth_level" : {
+        "1" : 100.000000,
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "iodepth_submit" : {
+        "0" : 0.000000,
+        "4" : 100.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        "64" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "iodepth_complete" : {
+        "0" : 0.000000,
+        "4" : 100.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        "64" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "latency_ns" : {
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "10" : 0.000000,
+        "20" : 0.000000,
+        "50" : 0.000000,
+        "100" : 0.000000,
+        "250" : 0.010000,
+        "500" : 0.010000,
+        "750" : 0.000000,
+        "1000" : 0.000000
+      },
+      "latency_us" : {
+        "2" : 0.000000,
+<<<<<<<< HEAD:results/bounce-buf/qd-1-run-3.json
+        "4" : 0.000000,
+        "10" : 0.000000,
+        "20" : 0.000000,
+        "50" : 0.000000,
+        "100" : 0.000000,
+        "250" : 96.812992,
+        "500" : 3.183939,
+        "750" : 0.010000,
+========
+        "4" : 0.010000,
+        "10" : 0.010800,
+        "20" : 75.067805,
+        "50" : 20.688103,
+        "100" : 4.230667,
+        "250" : 0.010000,
+        "500" : 0.010000,
+        "750" : 0.000000,
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/blkio-io_uring/qd-1-run-2.json
+        "1000" : 0.010000
+      },
+      "latency_ms" : {
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "10" : 0.000000,
+        "20" : 0.000000,
+        "50" : 0.000000,
+        "100" : 0.000000,
+        "250" : 0.000000,
+        "500" : 0.000000,
+        "750" : 0.000000,
+        "1000" : 0.000000,
+        "2000" : 0.000000,
+        ">=2000" : 0.000000
+      },
+      "latency_depth" : 1,
+      "latency_target" : 0,
+      "latency_percentile" : 100.000000,
+      "latency_window" : 0
+    }
+  ],
+  "disk_util" : [
+    {
+      "name" : "vdb",
+<<<<<<<< HEAD:results/bounce-buf/qd-1-run-3.json
+      "read_ios" : 282394,
+      "write_ios" : 0,
+      "read_merges" : 0,
+      "write_merges" : 0,
+      "read_ticks" : 63238,
+      "write_ticks" : 0,
+      "in_queue" : 63238,
+      "util" : 99.863266
+========
+      "read_ios" : 2558654,
+      "write_ios" : 0,
+      "read_merges" : 0,
+      "write_merges" : 0,
+      "read_ticks" : 54465,
+      "write_ticks" : 0,
+      "in_queue" : 54465,
+      "util" : 99.863264
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/blkio-io_uring/qd-1-run-2.json
+    }
+  ]
+}

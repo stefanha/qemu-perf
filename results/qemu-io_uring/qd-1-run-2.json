@@ -1,0 +1,383 @@
+{
+  "fio version" : "fio-3.29",
+<<<<<<<< HEAD:results/registered-buf/qd-1-run-3.json
+  "timestamp" : 1662730491,
+  "timestamp_ms" : 1662730491340,
+  "time" : "Fri Sep  9 09:34:51 2022",
+========
+  "timestamp" : 1662663397,
+  "timestamp_ms" : 1662663397010,
+  "time" : "Thu Sep  8 14:56:37 2022",
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/qemu-io_uring/qd-1-run-2.json
+  "global options" : {
+    "bs" : "512",
+    "iodepth" : "1",
+    "ioengine" : "io_uring",
+    "direct" : "1",
+    "runtime" : "60",
+    "ramp_time" : "5",
+    "thread" : "1",
+    "norandommap" : "1",
+    "random_generator" : "lfsr",
+    "randrepeat" : "0",
+    "group_reporting" : "1",
+    "cpus_allowed" : "2",
+    "numa_mem_policy" : "bind:0",
+    "lat_percentiles" : "1",
+    "slat_percentiles" : "0",
+    "clat_percentiles" : "0",
+    "filename" : "/dev/vdb",
+    "nonvectored" : "1",
+    "registerfiles" : "1"
+  },
+  "jobs" : [
+    {
+      "jobname" : "job1",
+      "groupid" : 0,
+      "error" : 0,
+      "eta" : 0,
+      "elapsed" : 66,
+      "job options" : {
+        "rw" : "randread"
+      },
+      "read" : {
+<<<<<<<< HEAD:results/registered-buf/qd-1-run-3.json
+        "io_bytes" : 396462080,
+        "io_kbytes" : 387170,
+        "bw_bytes" : 6607591,
+        "bw" : 6452,
+        "iops" : 12905.451576,
+        "runtime" : 60001,
+        "total_ios" : 774340,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 3797,
+          "max" : 221517,
+          "mean" : 7095.410537,
+          "stddev" : 998.422918,
+          "N" : 774340
+        },
+        "clat_ns" : {
+          "min" : 221,
+          "max" : 589218,
+          "mean" : 69649.391475,
+          "stddev" : 4858.600097,
+          "N" : 774340
+        },
+        "lat_ns" : {
+          "min" : 53728,
+          "max" : 596498,
+          "mean" : 76857.081442,
+          "stddev" : 4925.439208,
+          "N" : 774340,
+          "percentile" : {
+            "1.000000" : 74240,
+            "5.000000" : 74240,
+            "10.000000" : 74240,
+            "20.000000" : 75264,
+            "30.000000" : 75264,
+            "40.000000" : 75264,
+            "50.000000" : 75264,
+            "60.000000" : 76288,
+            "70.000000" : 76288,
+            "80.000000" : 77312,
+            "90.000000" : 79360,
+            "95.000000" : 83456,
+            "99.000000" : 104960,
+            "99.500000" : 107008,
+            "99.900000" : 114176,
+            "99.950000" : 117248,
+            "99.990000" : 152576
+          }
+        },
+        "bw_min" : 6390,
+        "bw_max" : 6501,
+        "bw_agg" : 100.000000,
+        "bw_mean" : 6454.808333,
+        "bw_dev" : 18.307043,
+        "bw_samples" : 120,
+        "iops_min" : 12780,
+        "iops_max" : 13002,
+        "iops_mean" : 12909.800000,
+        "iops_stddev" : 36.607296,
+========
+        "io_bytes" : 1250741248,
+        "io_kbytes" : 1221427,
+        "bw_bytes" : 20845340,
+        "bw" : 20356,
+        "iops" : 40713.554774,
+        "runtime" : 60001,
+        "total_ios" : 2442854,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 3206,
+          "max" : 684994,
+          "mean" : 3724.763635,
+          "stddev" : 827.089074,
+          "N" : 2442854
+        },
+        "clat_ns" : {
+          "min" : 158,
+          "max" : 797647,
+          "mean" : 20140.910924,
+          "stddev" : 7121.566198,
+          "N" : 2442854
+        },
+        "lat_ns" : {
+          "min" : 19588,
+          "max" : 801391,
+          "mean" : 23992.570994,
+          "stddev" : 7184.334319,
+          "N" : 2442854,
+          "percentile" : {
+            "1.000000" : 20608,
+            "5.000000" : 20608,
+            "10.000000" : 20864,
+            "20.000000" : 20864,
+            "30.000000" : 21120,
+            "40.000000" : 21120,
+            "50.000000" : 21376,
+            "60.000000" : 21632,
+            "70.000000" : 21888,
+            "80.000000" : 22400,
+            "90.000000" : 32640,
+            "95.000000" : 42240,
+            "99.000000" : 55040,
+            "99.500000" : 55552,
+            "99.900000" : 58112,
+            "99.950000" : 59648,
+            "99.990000" : 63232
+          }
+        },
+        "bw_min" : 19513,
+        "bw_max" : 20948,
+        "bw_agg" : 100.000000,
+        "bw_mean" : 20360.083333,
+        "bw_dev" : 475.463764,
+        "bw_samples" : 120,
+        "iops_min" : 39026,
+        "iops_max" : 41896,
+        "iops_mean" : 40720.183333,
+        "iops_stddev" : 950.939394,
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/qemu-io_uring/qd-1-run-2.json
+        "iops_samples" : 120
+      },
+      "write" : {
+        "io_bytes" : 0,
+        "io_kbytes" : 0,
+        "bw_bytes" : 0,
+        "bw" : 0,
+        "iops" : 0.000000,
+        "runtime" : 0,
+        "total_ios" : 0,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "clat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "bw_min" : 0,
+        "bw_max" : 0,
+        "bw_agg" : 0.000000,
+        "bw_mean" : 0.000000,
+        "bw_dev" : 0.000000,
+        "bw_samples" : 0,
+        "iops_min" : 0,
+        "iops_max" : 0,
+        "iops_mean" : 0.000000,
+        "iops_stddev" : 0.000000,
+        "iops_samples" : 0
+      },
+      "trim" : {
+        "io_bytes" : 0,
+        "io_kbytes" : 0,
+        "bw_bytes" : 0,
+        "bw" : 0,
+        "iops" : 0.000000,
+        "runtime" : 0,
+        "total_ios" : 0,
+        "short_ios" : 0,
+        "drop_ios" : 0,
+        "slat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "clat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        },
+        "bw_min" : 0,
+        "bw_max" : 0,
+        "bw_agg" : 0.000000,
+        "bw_mean" : 0.000000,
+        "bw_dev" : 0.000000,
+        "bw_samples" : 0,
+        "iops_min" : 0,
+        "iops_max" : 0,
+        "iops_mean" : 0.000000,
+        "iops_stddev" : 0.000000,
+        "iops_samples" : 0
+      },
+      "sync" : {
+        "total_ios" : 0,
+        "lat_ns" : {
+          "min" : 0,
+          "max" : 0,
+          "mean" : 0.000000,
+          "stddev" : 0.000000,
+          "N" : 0
+        }
+      },
+      "job_runtime" : 60000,
+<<<<<<<< HEAD:results/registered-buf/qd-1-run-3.json
+      "usr_cpu" : 1.775000,
+      "sys_cpu" : 10.385000,
+      "ctx" : 776191,
+========
+      "usr_cpu" : 5.336667,
+      "sys_cpu" : 19.478333,
+      "ctx" : 2445784,
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/qemu-io_uring/qd-1-run-2.json
+      "majf" : 0,
+      "minf" : 0,
+      "iodepth_level" : {
+        "1" : 100.000000,
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "iodepth_submit" : {
+        "0" : 0.000000,
+        "4" : 100.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        "64" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "iodepth_complete" : {
+        "0" : 0.000000,
+        "4" : 100.000000,
+        "8" : 0.000000,
+        "16" : 0.000000,
+        "32" : 0.000000,
+        "64" : 0.000000,
+        ">=64" : 0.000000
+      },
+      "latency_ns" : {
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "10" : 0.000000,
+        "20" : 0.000000,
+        "50" : 0.000000,
+        "100" : 0.000000,
+        "250" : 0.010000,
+        "500" : 0.010000,
+<<<<<<<< HEAD:results/registered-buf/qd-1-run-3.json
+        "750" : 0.000000,
+========
+        "750" : 0.010000,
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/qemu-io_uring/qd-1-run-2.json
+        "1000" : 0.000000
+      },
+      "latency_us" : {
+        "2" : 0.000000,
+<<<<<<<< HEAD:results/registered-buf/qd-1-run-3.json
+        "4" : 0.000000,
+        "10" : 0.010000,
+        "20" : 0.000000,
+        "50" : 0.010000,
+        "100" : 99.498282,
+        "250" : 0.495131,
+========
+        "4" : 0.010000,
+        "10" : 0.045725,
+        "20" : 83.573640,
+        "50" : 14.622978,
+        "100" : 1.753850,
+        "250" : 0.010000,
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/qemu-io_uring/qd-1-run-2.json
+        "500" : 0.010000,
+        "750" : 0.010000,
+        "1000" : 0.000000
+      },
+      "latency_ms" : {
+        "2" : 0.000000,
+        "4" : 0.000000,
+        "10" : 0.000000,
+        "20" : 0.000000,
+        "50" : 0.000000,
+        "100" : 0.000000,
+        "250" : 0.000000,
+        "500" : 0.000000,
+        "750" : 0.000000,
+        "1000" : 0.000000,
+        "2000" : 0.000000,
+        ">=2000" : 0.000000
+      },
+      "latency_depth" : 1,
+      "latency_target" : 0,
+      "latency_percentile" : 100.000000,
+      "latency_window" : 0
+    }
+  ],
+  "disk_util" : [
+    {
+      "name" : "vdb",
+<<<<<<<< HEAD:results/registered-buf/qd-1-run-3.json
+      "read_ios" : 838871,
+      "write_ios" : 0,
+      "read_merges" : 0,
+      "write_merges" : 0,
+      "read_ticks" : 61148,
+      "write_ticks" : 0,
+      "in_queue" : 61148,
+      "util" : 99.881680
+========
+      "read_ios" : 2638148,
+      "write_ios" : 0,
+      "read_merges" : 0,
+      "write_merges" : 0,
+      "read_ticks" : 53508,
+      "write_ticks" : 0,
+      "in_queue" : 53508,
+      "util" : 99.861730
+>>>>>>>> cd25aa8 (Compare aio=io_uring and libblkio driver=io_uring):results/qemu-io_uring/qd-1-run-2.json
+    }
+  ]
+}

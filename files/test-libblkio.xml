@@ -150,7 +150,7 @@
   </qemu:commandline> -->
   <qemu:commandline>
    <qemu:arg value='-blockdev'/>
-   <qemu:arg value='{"driver":"virtio-blk-vhost-user","node-name":"drive-nvme","cache":{"direct":true},"path":"/var/tmp/vhost-user-blk.sock"}'/>
+   <qemu:arg value='{"driver":"io_uring","node-name":"drive-nvme","cache":{"direct":true},"filename":"/dev/nvme0n1"}'/>
   </qemu:commandline>
   <qemu:commandline>
    <qemu:arg value='-device'/>
