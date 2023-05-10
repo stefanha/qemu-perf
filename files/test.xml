@@ -25,7 +25,7 @@
     <memory mode='strict' nodeset='0'/>
   </numatune>
   <os>
-    <type arch='x86_64' machine='pc-q35-5.0'>hvm</type>
+    <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
@@ -49,7 +49,7 @@
     <suspend-to-disk enabled='no'/>
   </pm>
   <devices>
-    <emulator>/root/qemu/x86_64-softmmu/qemu-system-x86_64</emulator>
+    <emulator>/root/qemu/build/qemu-system-x86_64</emulator>
     <controller type='scsi' index='0' model='virtio-scsi'>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </controller>
@@ -65,10 +65,10 @@
 	    </source>
     </hostdev>
 -->
-    <disk type='file' device='disk'>
+    <disk type='block' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native' iothread='1' />
-      <source file='/dev/nvme0n1'/>
-      <target dev='vdb' bus='virtio'/>
+      <source dev='/dev/nvme0n1'/>
+      <target dev='vda' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </disk>
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>

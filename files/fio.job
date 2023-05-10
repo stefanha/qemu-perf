@@ -1,7 +1,7 @@
 [global]
 ioengine=libaio
 direct=1
-runtime=60
+runtime=30
 ramp_time=5
 clocksource=cpu
 

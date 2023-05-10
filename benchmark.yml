@@ -47,12 +47,15 @@
              'libseccomp-devel',
              'libssh2-devel',
              'libtool',
+             'liburing-devel',
              'libusbx-devel',
              'libuuid-devel',
              'lzo-devel',
              'make',
              'mesa-libgbm-devel',
+             'meson',
              'ncurses-devel',
+             'ninja-build',
              'nss-devel',
              'numactl-devel',
              'pciutils-devel',
@@ -80,7 +83,7 @@
    - name: install virt-builder
      dnf:
         state: present
-        name: ['libguestfs-tools', 'libvirt-daemon', 'libvirt-client']
+        name: ['libguestfs-tools-c', 'libvirt-daemon', 'libvirt-client']
 
    - name: configure libvirt QEMU settings
      copy: src=files/qemu.conf-no-vfio dest=/etc/libvirt/qemu.conf mode=644
@@ -89,7 +92,7 @@
      service: name=libvirtd state=reloaded
 
    - name: create vm image
-     shell: virt-builder fedora-32 --quiet --size 16G --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --upload '/root/.ssh/authorized_keys:/root/.ssh/authorized_keys' --chmod '0600:/root/.ssh/authorized_keys' --root-password password:linux99 --selinux-relabel creates=/var/lib/libvirt/images/test.img
+     shell: virt-builder fedora-37 --quiet --size 16G --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --upload '/root/.ssh/authorized_keys:/root/.ssh/authorized_keys' --chmod '0600:/root/.ssh/authorized_keys' --root-password password:linux99 --selinux-relabel creates=/var/lib/libvirt/images/test.img
 
 - name: build QEMU
   hosts: hosts
@@ -100,8 +103,8 @@
 
    - name: set up QEMU git repo
      git:
-       repo=https://code.engineering.redhat.com/gerrit/virt-rhel8-qemu-kvm
-       version=rhel-av-8.3.1
+       repo=https://gitlab.com/stefanha/qemu.git
+       version=with-blk_io_plug
        dest=/root/qemu
        force=yes
 
@@ -124,7 +127,7 @@
        state: permissive
 
    - name: build QEMU
-     shell: ./configure --target-list=x86_64-softmmu --disable-auth-pam --disable-avx512f --disable-bochs --disable-brlapi --disable-bsd-user --disable-bzip2 --disable-cap-ng --enable-capstone --disable-cloop --disable-cocoa --enable-coroutine-pool --disable-crypto-afalg --enable-curl --disable-curses --enable-debug-info --disable-debug-mutex --disable-debug-tcg --disable-dmg --disable-docs --disable-fdt --enable-gcrypt --disable-git-update --disable-glusterfs --enable-gnutls --disable-gtk --disable-guest-agent --disable-guest-agent-msi --disable-hax --disable-hvf --enable-iconv --disable-jemalloc --enable-kvm --disable-libdaxctl --enable-libiscsi --disable-libnfs --disable-libpmem --disable-libssh --disable-libusb --disable-libxml2 --enable-linux-aio --disable-linux-io-uring --disable-linux-user --disable-live-block-migration --disable-lzfse --enable-lzo --enable-malloc-trim --disable-membarrier --enable-modules --disable-module-upgrades --disable-mpath --disable-netmap --disable-nettle --enable-numa --enable-opengl --disable-parallels --enable-pie --disable-pvrdma --disable-qcow1 --disable-qed --disable-qom-cast-debug --enable-rbd --disable-rdma --disable-rng-none --disable-replication --disable-safe-stack --disable-sanitizers --disable-sdl --disable-sdl-image --enable-seccomp --disable-sheepdog --disable-snappy --disable-sparse --disable-smartcard --enable-spice --disable-strip --enable-system --enable-tcg --disable-tcmalloc --enable-tools --enable-tpm --enable-trace-backend=dtrace --disable-usb-redir --disable-user --disable-vde --disable-vdi --disable-vhost-crypto --enable-vhost-kernel --enable-vhost-net --disable-vhost-scsi --enable-vhost-user --enable-vhost-vdpa --enable-vhost-vsock --disable-virglrenderer --disable-virtfs --enable-vnc --disable-vnc-jpeg --enable-vnc-png --enable-vnc-sasl --disable-vte --disable-vvfat --enable-werror --disable-whpx --disable-xen --disable-xen-pci-passthrough --disable-xfsctl --disable-xkbcommon --disable-zstd --without-default-devices && make -j$(nproc) chdir=/root/qemu
+     shell: ./configure --target-list=x86_64-softmmu && make -j$(nproc) chdir=/root/qemu
 
 #- name: put NVMe flash translation later into well-known state
 #  hosts : hosts
@@ -137,15 +140,15 @@
 #   - name: write NVMe drive (second pass)
 #     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
 
-#- name: make NVMe drive world writeable
-#  hosts: hosts
-#  remote_user: root
-#  tasks:
-#    - name: set permissions on /dev/nvme0n1
-#      file:
-#        path: /dev/nvme0n1
-#        mode: '0666'
-#
+- name: make NVMe drive world writeable
+  hosts: hosts
+  remote_user: root
+  tasks:
+    - name: set permissions on /dev/nvme0n1
+      file:
+        path: /dev/nvme0n1
+        mode: '0666'
+
 #- name: set up vfio-pci
 #  hosts: hosts
 #  remote_user: root
