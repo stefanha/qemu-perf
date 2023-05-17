@@ -1,0 +1,1 @@
+fio --output-format=json --output=fio-output.json --iodepth 64 /root/fio.job

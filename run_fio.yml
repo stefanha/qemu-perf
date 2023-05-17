@@ -1,9 +1,0 @@
----
-- name: disable I/O scheduler
-  shell: echo -n none > /sys/block/vda/queue/scheduler
-- name: copy fio job files
-  copy: src=files/fio.job dest=/root/fio.job mode=644
-- name: run fio
-  shell: fio --output-format=json --output fio-output.json --filename /dev/vda --rw randread --bs 4k --numjobs 1 --iodepth 1 fio.job
-- name: collect benchmark results
-  fetch: src=fio-output.json dest=/tmp/ flat=yes
