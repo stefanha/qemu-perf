@@ -1,0 +1,17 @@
+[global]
+filename=/dev/vdb
+ioengine=libaio
+ioscheduler=none
+direct=1
+runtime=30
+ramp_time=5
+clocksource=cpu
+norandommap
+cpus_allowed=0
+write_iops_log # generates job1_iops.1.log
+log_avg_msec=1000
+
+[job1]
+rw=randread
+bs=4k
+numjobs=1

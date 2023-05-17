@@ -94,6 +94,501 @@
    - name: create vm image
      shell: virt-builder fedora-37 --quiet --size 16G --output /var/lib/libvirt/images/test.img --format raw --mkdir '/root/.ssh' --chmod '0700:/root/.ssh' --upload '/root/.ssh/authorized_keys:/root/.ssh/authorized_keys' --chmod '0600:/root/.ssh/authorized_keys' --root-password password:linux99 --install tuned,fio,rsync --selinux-relabel creates=/var/lib/libvirt/images/test.img
 
+#- name: build QEMU
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: remove pull request tags to prevent fetch --tags failures
+#     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
+#
+#   - name: set up QEMU git repo
+#     git:
+#       repo=https://gitlab.com/stefanha/qemu.git
+#       version=with-blk_io_plug
+#       dest=/root/qemu
+#       force=yes
+#
+#   - name: ignore submodules in git-status(1)
+#     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
+#
+#   - name: allow path traversal into /root
+#     file:
+#       path: /root
+#       mode: '551'
+#
+#   - name: install SELinux Python modules
+#     dnf:
+#       state: present
+#       name: ['python3-libselinux']
+#
+#   - name: set SELinux to permissive mode to avoid having to set contexts on all files
+#     selinux:
+#       policy: targeted
+#       state: permissive
+#
+#   - name: build QEMU
+#     shell: ./configure --target-list=x86_64-softmmu && make -j$(nproc) chdir=/root/qemu
+#
+##- name: put NVMe flash translation later into well-known state
+##  hosts : hosts
+##  remote_user: root
+##  tasks:
+##   - name: discard NVMe drive
+##     shell: blkdiscard /dev/nvme0n1p1
+##   - name: write NVMe drive (first pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+##   - name: write NVMe drive (second pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+#
+#- name: make NVMe drive world writeable
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#    - name: set permissions on /dev/nvme0n1
+#      file:
+#        path: /dev/nvme0n1
+#        mode: '0666'
+#
+##- name: set up vfio-pci
+##  hosts: hosts
+##  remote_user: root
+##  tasks:
+##    - name: bind the nvme drive to vfio-pci
+##      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
+##      ignore_errors: yes
+#
+#- name: set up host
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: reserve hugepages
+#     shell: echo 4608 >/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+#
+#   - name: install tuned
+#     dnf:
+#         state: present
+#         name: ['tuned']
+#
+#   - name: set tuned profile
+#     shell: tuned-adm profile virtual-host
+#
+#- name: start VM
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: install python3-libvirt
+#     dnf:
+#        state: present
+#        name: 'python3-libvirt'
+#
+#   - name: define VM
+#     virt:
+#       command: define
+#       xml: "{{ lookup('file', 'files/test.xml') }}"
+#
+#   - name: start VM
+#     virt:
+#       name: test
+#       state: running
+#
+#   - name: wait for SSH
+#     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
+#
+#- name: run benchmark
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: set virtual-guest tuned profile
+#     shell: tuned-adm profile virtual-guest
+#   - name: copy fio job files
+#     copy: src=files/fio.job dest=/root/fio.job mode=644
+#   - name: copy fio job files
+#     copy: src=files/fio.sh dest=/root/fio.sh mode=755
+#   - name: run fio
+#     shell: /root/fio.sh
+#   - name: collect benchmark results
+#     synchronize: mode=pull src=/root/results/ dest=results/with-blk_io_plug
+#
+#- name: stop VM
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: stop QEMU
+#     command: /sbin/shutdown -t now
+#
+##- name: clean up vfio-pci
+##  hosts: hosts
+##  remote_user: root
+##  tasks:
+##    - name: unbind the nvme drive to vfio-pci
+##      command: driverctl --nosave unset-override 0000:5e:00.0
+#
+#- name: build QEMU
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: remove pull request tags to prevent fetch --tags failures
+#     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
+#
+#   - name: set up QEMU git repo
+#     git:
+#       repo=https://gitlab.com/stefanha/qemu.git
+#       version=no-blk_io_plug
+#       dest=/root/qemu
+#       force=yes
+#
+#   - name: ignore submodules in git-status(1)
+#     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
+#
+#   - name: allow path traversal into /root
+#     file:
+#       path: /root
+#       mode: '551'
+#
+#   - name: install SELinux Python modules
+#     dnf:
+#       state: present
+#       name: ['python3-libselinux']
+#
+#   - name: set SELinux to permissive mode to avoid having to set contexts on all files
+#     selinux:
+#       policy: targeted
+#       state: permissive
+#
+#   - name: build QEMU
+#     shell: ./configure --target-list=x86_64-softmmu && make -j$(nproc) chdir=/root/qemu
+#
+##- name: put NVMe flash translation later into well-known state
+##  hosts : hosts
+##  remote_user: root
+##  tasks:
+##   - name: discard NVMe drive
+##     shell: blkdiscard /dev/nvme0n1p1
+##   - name: write NVMe drive (first pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+##   - name: write NVMe drive (second pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+#
+#- name: make NVMe drive world writeable
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#    - name: set permissions on /dev/nvme0n1
+#      file:
+#        path: /dev/nvme0n1
+#        mode: '0666'
+#
+##- name: set up vfio-pci
+##  hosts: hosts
+##  remote_user: root
+##  tasks:
+##    - name: bind the nvme drive to vfio-pci
+##      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
+##      ignore_errors: yes
+#
+#- name: set up host
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: reserve hugepages
+#     shell: echo 4608 >/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+#
+#   - name: install tuned
+#     dnf:
+#         state: present
+#         name: ['tuned']
+#
+#   - name: set tuned profile
+#     shell: tuned-adm profile virtual-host
+#
+#- name: start VM
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: install python3-libvirt
+#     dnf:
+#        state: present
+#        name: 'python3-libvirt'
+#
+#   - name: define VM
+#     virt:
+#       command: define
+#       xml: "{{ lookup('file', 'files/test.xml') }}"
+#
+#   - name: start VM
+#     virt:
+#       name: test
+#       state: running
+#
+#   - name: wait for SSH
+#     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
+#
+#- name: run benchmark
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: set virtual-guest tuned profile
+#     shell: tuned-adm profile virtual-guest
+#   - name: copy fio job files
+#     copy: src=files/fio.job dest=/root/fio.job mode=644
+#   - name: copy fio job files
+#     copy: src=files/fio.sh dest=/root/fio.sh mode=755
+#   - name: run fio
+#     shell: /root/fio.sh
+#   - name: collect benchmark results
+#     synchronize: mode=pull src=/root/results/ dest=results/no-blk_io_plug
+#
+#- name: stop VM
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: stop QEMU
+#     command: /sbin/shutdown -t now
+#
+#- name: build QEMU
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: remove pull request tags to prevent fetch --tags failures
+#     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
+#
+#   - name: set up QEMU git repo
+#     git:
+#       repo=https://gitlab.com/stefanha/qemu.git
+#       version=call-after-dispatch
+#       dest=/root/qemu
+#       force=yes
+#
+#   - name: ignore submodules in git-status(1)
+#     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
+#
+#   - name: allow path traversal into /root
+#     file:
+#       path: /root
+#       mode: '551'
+#
+#   - name: install SELinux Python modules
+#     dnf:
+#       state: present
+#       name: ['python3-libselinux']
+#
+#   - name: set SELinux to permissive mode to avoid having to set contexts on all files
+#     selinux:
+#       policy: targeted
+#       state: permissive
+#
+#   - name: build QEMU
+#     shell: ./configure --target-list=x86_64-softmmu && make -j$(nproc) chdir=/root/qemu
+#
+##- name: put NVMe flash translation later into well-known state
+##  hosts : hosts
+##  remote_user: root
+##  tasks:
+##   - name: discard NVMe drive
+##     shell: blkdiscard /dev/nvme0n1p1
+##   - name: write NVMe drive (first pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+##   - name: write NVMe drive (second pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+#
+#- name: make NVMe drive world writeable
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#    - name: set permissions on /dev/nvme0n1
+#      file:
+#        path: /dev/nvme0n1
+#        mode: '0666'
+#
+##- name: set up vfio-pci
+##  hosts: hosts
+##  remote_user: root
+##  tasks:
+##    - name: bind the nvme drive to vfio-pci
+##      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
+##      ignore_errors: yes
+#
+#- name: set up host
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: reserve hugepages
+#     shell: echo 4608 >/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+#
+#   - name: install tuned
+#     dnf:
+#         state: present
+#         name: ['tuned']
+#
+#   - name: set tuned profile
+#     shell: tuned-adm profile virtual-host
+#
+#- name: start VM
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: install python3-libvirt
+#     dnf:
+#        state: present
+#        name: 'python3-libvirt'
+#
+#   - name: define VM
+#     virt:
+#       command: define
+#       xml: "{{ lookup('file', 'files/test.xml') }}"
+#
+#   - name: start VM
+#     virt:
+#       name: test
+#       state: running
+#
+#   - name: wait for SSH
+#     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
+#
+#- name: run benchmark
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: set virtual-guest tuned profile
+#     shell: tuned-adm profile virtual-guest
+#   - name: copy fio job files
+#     copy: src=files/fio.job dest=/root/fio.job mode=644
+#   - name: copy fio job files
+#     copy: src=files/fio.sh dest=/root/fio.sh mode=755
+#   - name: run fio
+#     shell: /root/fio.sh
+#   - name: collect benchmark results
+#     synchronize: mode=pull src=/root/results/ dest=results/call-after-dispatch
+#
+#- name: stop VM
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: stop QEMU
+#     command: /sbin/shutdown -t now
+#
+#- name: build QEMU
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: remove pull request tags to prevent fetch --tags failures
+#     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
+#
+#   - name: set up QEMU git repo
+#     git:
+#       repo=https://gitlab.com/stefanha/qemu.git
+#       version=v7.2.0-with-bh-slice-fix
+#       dest=/root/qemu
+#       force=yes
+#
+#   - name: ignore submodules in git-status(1)
+#     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
+#
+#   - name: allow path traversal into /root
+#     file:
+#       path: /root
+#       mode: '551'
+#
+#   - name: install SELinux Python modules
+#     dnf:
+#       state: present
+#       name: ['python3-libselinux']
+#
+#   - name: set SELinux to permissive mode to avoid having to set contexts on all files
+#     selinux:
+#       policy: targeted
+#       state: permissive
+#
+#   - name: build QEMU
+#     shell: ./configure --target-list=x86_64-softmmu --disable-werror --disable-curl && make -j$(nproc) chdir=/root/qemu
+#
+##- name: put NVMe flash translation later into well-known state
+##  hosts : hosts
+##  remote_user: root
+##  tasks:
+##   - name: discard NVMe drive
+##     shell: blkdiscard /dev/nvme0n1p1
+##   - name: write NVMe drive (first pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+##   - name: write NVMe drive (second pass)
+##     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
+#
+#- name: make NVMe drive world writeable
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#    - name: set permissions on /dev/nvme0n1
+#      file:
+#        path: /dev/nvme0n1
+#        mode: '0666'
+#
+##- name: set up vfio-pci
+##  hosts: hosts
+##  remote_user: root
+##  tasks:
+##    - name: bind the nvme drive to vfio-pci
+##      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
+##      ignore_errors: yes
+#
+#- name: set up host
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: reserve hugepages
+#     shell: echo 4608 >/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+#
+#   - name: install tuned
+#     dnf:
+#         state: present
+#         name: ['tuned']
+#
+#   - name: set tuned profile
+#     shell: tuned-adm profile virtual-host
+#
+#- name: start VM
+#  hosts: hosts
+#  remote_user: root
+#  tasks:
+#   - name: install python3-libvirt
+#     dnf:
+#        state: present
+#        name: 'python3-libvirt'
+#
+#   - name: define VM
+#     virt:
+#       command: define
+#       xml: "{{ lookup('file', 'files/test.xml') }}"
+#
+#   - name: start VM
+#     virt:
+#       name: test
+#       state: running
+#
+#   - name: wait for SSH
+#     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
+#
+#- name: run benchmark
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: set virtual-guest tuned profile
+#     shell: tuned-adm profile virtual-guest
+#   - name: copy fio job files
+#     copy: src=files/fio.job dest=/root/fio.job mode=644
+#   - name: copy fio job files
+#     copy: src=files/fio.sh dest=/root/fio.sh mode=755
+#   - name: run fio
+#     shell: /root/fio.sh
+#   - name: collect benchmark results
+#     synchronize: mode=pull src=/root/results/ dest=results/v7.2.0
+#
+#- name: stop VM
+#  hosts: vms
+#  remote_user: root
+#  tasks:
+#   - name: stop QEMU
+#     command: /sbin/shutdown -t now
+
 - name: build QEMU
   hosts: hosts
   remote_user: root
@@ -104,380 +599,7 @@
    - name: set up QEMU git repo
      git:
        repo=https://gitlab.com/stefanha/qemu.git
-       version=with-blk_io_plug
-       dest=/root/qemu
-       force=yes
-
-   - name: ignore submodules in git-status(1)
-     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
-
-   - name: allow path traversal into /root
-     file:
-       path: /root
-       mode: '551'
-
-   - name: install SELinux Python modules
-     dnf:
-       state: present
-       name: ['python3-libselinux']
-
-   - name: set SELinux to permissive mode to avoid having to set contexts on all files
-     selinux:
-       policy: targeted
-       state: permissive
-
-   - name: build QEMU
-     shell: ./configure --target-list=x86_64-softmmu && make -j$(nproc) chdir=/root/qemu
-
-#- name: put NVMe flash translation later into well-known state
-#  hosts : hosts
-#  remote_user: root
-#  tasks:
-#   - name: discard NVMe drive
-#     shell: blkdiscard /dev/nvme0n1p1
-#   - name: write NVMe drive (first pass)
-#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
-#   - name: write NVMe drive (second pass)
-#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
-
-- name: make NVMe drive world writeable
-  hosts: hosts
-  remote_user: root
-  tasks:
-    - name: set permissions on /dev/nvme0n1
-      file:
-        path: /dev/nvme0n1
-        mode: '0666'
-
-#- name: set up vfio-pci
-#  hosts: hosts
-#  remote_user: root
-#  tasks:
-#    - name: bind the nvme drive to vfio-pci
-#      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
-#      ignore_errors: yes
-
-- name: set up host
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: reserve hugepages
-     shell: echo 4608 >/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
-
-   - name: install tuned
-     dnf:
-         state: present
-         name: ['tuned']
-
-   - name: set tuned profile
-     shell: tuned-adm profile virtual-host
-
-- name: start VM
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: install python3-libvirt
-     dnf:
-        state: present
-        name: 'python3-libvirt'
-
-   - name: define VM
-     virt:
-       command: define
-       xml: "{{ lookup('file', 'files/test.xml') }}"
-
-   - name: start VM
-     virt:
-       name: test
-       state: running
-
-   - name: wait for SSH
-     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
-
-- name: run benchmark
-  hosts: vms
-  remote_user: root
-  tasks:
-   - name: set virtual-guest tuned profile
-     shell: tuned-adm profile virtual-guest
-   - name: copy fio job files
-     copy: src=files/fio.job dest=/root/fio.job mode=644
-   - name: copy fio job files
-     copy: src=files/fio.sh dest=/root/fio.sh mode=755
-   - name: run fio
-     shell: /root/fio.sh
-   - name: collect benchmark results
-     synchronize: mode=pull src=/root/results/ dest=results/with-blk_io_plug
-
-- name: stop VM
-  hosts: vms
-  remote_user: root
-  tasks:
-   - name: stop QEMU
-     command: /sbin/shutdown -t now
-
-#- name: clean up vfio-pci
-#  hosts: hosts
-#  remote_user: root
-#  tasks:
-#    - name: unbind the nvme drive to vfio-pci
-#      command: driverctl --nosave unset-override 0000:5e:00.0
-
-- name: build QEMU
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: remove pull request tags to prevent fetch --tags failures
-     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
-
-   - name: set up QEMU git repo
-     git:
-       repo=https://gitlab.com/stefanha/qemu.git
-       version=no-blk_io_plug
-       dest=/root/qemu
-       force=yes
-
-   - name: ignore submodules in git-status(1)
-     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
-
-   - name: allow path traversal into /root
-     file:
-       path: /root
-       mode: '551'
-
-   - name: install SELinux Python modules
-     dnf:
-       state: present
-       name: ['python3-libselinux']
-
-   - name: set SELinux to permissive mode to avoid having to set contexts on all files
-     selinux:
-       policy: targeted
-       state: permissive
-
-   - name: build QEMU
-     shell: ./configure --target-list=x86_64-softmmu && make -j$(nproc) chdir=/root/qemu
-
-#- name: put NVMe flash translation later into well-known state
-#  hosts : hosts
-#  remote_user: root
-#  tasks:
-#   - name: discard NVMe drive
-#     shell: blkdiscard /dev/nvme0n1p1
-#   - name: write NVMe drive (first pass)
-#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
-#   - name: write NVMe drive (second pass)
-#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
-
-- name: make NVMe drive world writeable
-  hosts: hosts
-  remote_user: root
-  tasks:
-    - name: set permissions on /dev/nvme0n1
-      file:
-        path: /dev/nvme0n1
-        mode: '0666'
-
-#- name: set up vfio-pci
-#  hosts: hosts
-#  remote_user: root
-#  tasks:
-#    - name: bind the nvme drive to vfio-pci
-#      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
-#      ignore_errors: yes
-
-- name: set up host
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: reserve hugepages
-     shell: echo 4608 >/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
-
-   - name: install tuned
-     dnf:
-         state: present
-         name: ['tuned']
-
-   - name: set tuned profile
-     shell: tuned-adm profile virtual-host
-
-- name: start VM
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: install python3-libvirt
-     dnf:
-        state: present
-        name: 'python3-libvirt'
-
-   - name: define VM
-     virt:
-       command: define
-       xml: "{{ lookup('file', 'files/test.xml') }}"
-
-   - name: start VM
-     virt:
-       name: test
-       state: running
-
-   - name: wait for SSH
-     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
-
-- name: run benchmark
-  hosts: vms
-  remote_user: root
-  tasks:
-   - name: set virtual-guest tuned profile
-     shell: tuned-adm profile virtual-guest
-   - name: copy fio job files
-     copy: src=files/fio.job dest=/root/fio.job mode=644
-   - name: copy fio job files
-     copy: src=files/fio.sh dest=/root/fio.sh mode=755
-   - name: run fio
-     shell: /root/fio.sh
-   - name: collect benchmark results
-     synchronize: mode=pull src=/root/results/ dest=results/no-blk_io_plug
-
-- name: stop VM
-  hosts: vms
-  remote_user: root
-  tasks:
-   - name: stop QEMU
-     command: /sbin/shutdown -t now
-
-- name: build QEMU
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: remove pull request tags to prevent fetch --tags failures
-     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
-
-   - name: set up QEMU git repo
-     git:
-       repo=https://gitlab.com/stefanha/qemu.git
-       version=call-after-dispatch
-       dest=/root/qemu
-       force=yes
-
-   - name: ignore submodules in git-status(1)
-     git_config: name=diff.ignoreSubmodules value=all scope=local repo=/root/qemu
-
-   - name: allow path traversal into /root
-     file:
-       path: /root
-       mode: '551'
-
-   - name: install SELinux Python modules
-     dnf:
-       state: present
-       name: ['python3-libselinux']
-
-   - name: set SELinux to permissive mode to avoid having to set contexts on all files
-     selinux:
-       policy: targeted
-       state: permissive
-
-   - name: build QEMU
-     shell: ./configure --target-list=x86_64-softmmu && make -j$(nproc) chdir=/root/qemu
-
-#- name: put NVMe flash translation later into well-known state
-#  hosts : hosts
-#  remote_user: root
-#  tasks:
-#   - name: discard NVMe drive
-#     shell: blkdiscard /dev/nvme0n1p1
-#   - name: write NVMe drive (first pass)
-#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
-#   - name: write NVMe drive (second pass)
-#     shell: dd if=/dev/urandom of=/dev/nvme0n1p1 oflag=direct bs=2M count=178853
-
-- name: make NVMe drive world writeable
-  hosts: hosts
-  remote_user: root
-  tasks:
-    - name: set permissions on /dev/nvme0n1
-      file:
-        path: /dev/nvme0n1
-        mode: '0666'
-
-#- name: set up vfio-pci
-#  hosts: hosts
-#  remote_user: root
-#  tasks:
-#    - name: bind the nvme drive to vfio-pci
-#      command: driverctl --nosave set-override 0000:5e:00.0 vfio-pci
-#      ignore_errors: yes
-
-- name: set up host
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: reserve hugepages
-     shell: echo 4608 >/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
-
-   - name: install tuned
-     dnf:
-         state: present
-         name: ['tuned']
-
-   - name: set tuned profile
-     shell: tuned-adm profile virtual-host
-
-- name: start VM
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: install python3-libvirt
-     dnf:
-        state: present
-        name: 'python3-libvirt'
-
-   - name: define VM
-     virt:
-       command: define
-       xml: "{{ lookup('file', 'files/test.xml') }}"
-
-   - name: start VM
-     virt:
-       name: test
-       state: running
-
-   - name: wait for SSH
-     wait_for: host=192.168.122.192 port=22 search_regex=SSH state=present timeout=120
-
-- name: run benchmark
-  hosts: vms
-  remote_user: root
-  tasks:
-   - name: set virtual-guest tuned profile
-     shell: tuned-adm profile virtual-guest
-   - name: copy fio job files
-     copy: src=files/fio.job dest=/root/fio.job mode=644
-   - name: copy fio job files
-     copy: src=files/fio.sh dest=/root/fio.sh mode=755
-   - name: run fio
-     shell: /root/fio.sh
-   - name: collect benchmark results
-     synchronize: mode=pull src=/root/results/ dest=results/call-after-dispatch
-
-- name: stop VM
-  hosts: vms
-  remote_user: root
-  tasks:
-   - name: stop QEMU
-     command: /sbin/shutdown -t now
-
-- name: build QEMU
-  hosts: hosts
-  remote_user: root
-  tasks:
-   - name: remove pull request tags to prevent fetch --tags failures
-     shell: '! test -d /root/qemu || (cd /root/qemu && git tag -d $(git tag -l "*-pull-request"))'
-
-   - name: set up QEMU git repo
-     git:
-       repo=https://gitlab.com/stefanha/qemu.git
-       version=v7.2.0-with-bh-slice-fix
+       version=blk_io_plug-thread-local
        dest=/root/qemu
        force=yes
 
@@ -580,7 +702,7 @@
    - name: run fio
      shell: /root/fio.sh
    - name: collect benchmark results
-     synchronize: mode=pull src=/root/results/ dest=results/v7.2.0
+     synchronize: mode=pull src=/root/results/ dest=results/blk_io_plug-thread-local
 
 - name: stop VM
   hosts: vms
